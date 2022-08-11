@@ -1,108 +1,131 @@
-import React, { Component } from 'react';
+import React from 'react';
 import axios from 'axios';
+import TextField from "@material-ui/core/TextField";
+import { useState } from "react";
+import Container from "@material-ui/core/Container";
+import './form.css';
+import Grid from "@material-ui/core/Grid";
+import { useHistory } from "react-router-dom";
 
-export default class FilesUploadComponent extends Component {
 
-    constructor(props) {
-        super(props);
+const FilesUploadComponent = () => {
 
-        this.onFileChange = this.onFileChange.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
+    let history = useHistory();
 
-        this.state = {
+    const [Duration, setDuration] = useState('');
+    const [imgCollection, setimgCollection] = useState('');
+    const [Customer_Name, setCustomer_Name] = useState('');
+    const [Amount, setAmount] = useState('');
+    const [payment, setPayment] = useState('');
 
-            imgCollection: '',
-            Customer_Name : '',
-            Amount: '',
-            Duration:'',
-            payment: ''
 
-        }
+    const onFileChange = (e) => {
+
+        setimgCollection(e.target.files)
     }
+    const onSubmit = (e) => {
 
-    onChange(e) {
-        this.setState({ imgCollection: e.target.value })
-    }
-
-    onFileChange(e) {
-        this.setState({ imgCollection: e.target.files })
-    }
-
-    onSubmit(e) {
         e.preventDefault()
 
-        let duration = this.state.Duration;
-        let amount = this.state.Amount;
-        var repayment = amount/duration;
-
-        console.log("ddddddd",repayment);
-        this.setState({
-            payment: repayment
-          });
-
+        let duration = Duration;
+        let amount = Amount;
+        let payment = amount / duration;
+        let repayment = parseInt(payment, 10);
+        setPayment(repayment);
 
         var formData = new FormData();
-        for (const key of Object.keys(this.state.imgCollection)) {
-            formData.append('imgCollection', this.state.imgCollection[key])
-           
+        for (const key of Object.keys(imgCollection)) {
+            formData.append('imgCollection', imgCollection[key])
+
         }
 
-        formData.append('Duration', this.state.Duration);   //append the values with key, value pair
-        formData.append('Customer_Name', this.state.Customer_Name);   //append the values with key, value pair
-        formData.append('Amount',this.state.Amount);   //append the values with key, value pair
-        formData.append('Amount',this.state.Amount);   //append the values with key, value pair
+        formData.append('Duration', Duration);   //append the values with key, value pair
+        formData.append('Customer_Name', Customer_Name);   //append the values with key, value pair
+        formData.append('Amount', Amount);   //append the values with key, value pair
+        formData.append('Repayment', repayment);   //append the values with key, value pair
 
-        formData.append('Repayment',this.state.payment);   //append the values with key, value pair
-
-
+        for (const value of formData.values()) {
+            console.log("sss", value);
+        }
         axios.post("http://localhost:8022/api/upload-images", formData, {
         }).then(res => {
+            alert("succesfully added records")
             console.log(res.data)
+            history.push("/Userlist");
+
         })
     }
+    return (
+        <Container fixed>
+            <div id="section" className="row">
+                <form className="forms" onSubmit={onSubmit}>
 
-    render() {
+                    <h3>Loan deatils form</h3>
+
+                    <Grid container alignItems="center" justifyContent="center" direction="column" width="30px">
+                        <Grid item>
+                            <label>Customer_Name : </label>
+
+                            <TextField
+                                id="cname"
+                                type="text"
+                                name="cname"
+                                value={Customer_Name}
+                                onChange={(e) =>
+                                    setCustomer_Name(e.target.value)}
+
+                            />
+                        </Grid>
+                        <Grid item>
+                            <label>Upload Bank file : </label>
+                            <input
+                                id="file"
+                                name="file"
+                                type="file"
+                                name="imgCollection" onChange={onFileChange} multiple
+                            />
+
+                        </Grid>
 
 
-        return (
-            <div className="container">
-                <div className="row">
- 
- 
- 
-                    <form onSubmit={this.onSubmit}>
- 
+                        <Grid item>
+                            <label>Amount : </label>
 
+                            <TextField
+                                id="Amount"
+                                type="text"
+                                name="Amount"
+                                value={Amount}
+                                onChange={(e) =>
+                                    setAmount(e.target.value)}
+                            />
 
+                        </Grid>
 
-                        <div className="form-group">
-                            <input type="file" name="imgCollection" onChange={this.onFileChange} multiple />
-                        </div>
-                        <div className="form-group">
-                            <input type="text" name="cname"  value={this.Customer_Name} onChange= {(e)=> 
-                                 this.setState({Customer_Name: e.target.value })}
-                                   />
+                        <Grid item>
+                            <label>Duration : </label>
 
-                        </div>
-                     
-                        <div className="form-group">
-                        <input type="text" name="cname"  value={this.Amount} onChange= {(e)=> 
-                                 this.setState({Amount: e.target.value })}
-                                   />
-                        </div>
-                        <div className="form-group">
-                        <input type="text" name="cname"  value={this.Duration} onChange= {(e)=> 
-                                 this.setState({Duration: e.target.value })}
-                                   />
-                        </div>
-                        <p>{this.payment}</p>
+                            <TextField
+                                id="Duration"
+                                type="text"
+                                name="Duration"
+                                value={Duration}
+                                onChange={(e) =>
+                                    setDuration(e.target.value)}
+                            />
 
-                        <div className="form-group">
-                            <button className="btn btn-primary" type="submit">Upload</button>
-                        </div>
-                    </form>
-                </div>
+                        </Grid>
+
+                    </Grid>
+
+                    <div className="form-group">
+                        <button className="btn btn-primary" type="submit">Submit</button>
+                    </div>
+                </form>
             </div>
-        )
-    }
+
+        </Container>
+    )
 }
+
+export default FilesUploadComponent;

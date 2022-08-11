@@ -1,68 +1,69 @@
 import React from 'react';
-import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-class Userlist extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            customers: [],
+import { useState, useEffect } from "react";
+import { useHistory } from 'react-router-dom';
+
+const Userlist = () => {
+
+  let history = useHistory();
+  const [customers, setCustomers] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8022/api/userlist")
+      .then(res => res.json())
+      .then(
+        (customer) => {
+          setCustomers(customer);
+          console.log("id", customer);
+        },
+        (error) => {
+          alert(error);
         }
-    }
-  
-  
- 
-    componentDidMount() {
- 
-      
-    
-        fetch("http://localhost:8022/api/userlist")
-        .then(res => res.json())
-        .then(
-            (customers) => {
+      )
+  }, []);
 
-                console.log("dsd",customers);
-                this.setState({ customers: customers });
-            },
-            (error) => {
-                alert(error);
-            }
-        )
-    }
- 
-    render() {
+  const Getbyid = (info) => {
+    history.push
+      ({
+        pathname: '/Profile',
+        state: { id: info }
+      });
 
-return (
-    <div className="App">
-      <h1 align="center">React-App</h1>
-      <h4 align='center'>Crash Course on Material Table </h4>
-      <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Username</th>
-        </tr>
-      </thead>
-      <tbody>
-    
-    
-                {this.state.customers.map(customer =>
-                    <tr>
-                        <td>{customer.Customer_Name}</td>
-                        <td>{customer.Amount}</td>
-                        <td>{customer.Duration}</td>
+  }
+  return (
+    <div id="section">
+      <h1 align="center">Customer details </h1>
+      <div className="table" style={{ padding: '142px', backgroundColor: 'w' }}>
 
-                        {/* <td>{cus</td> */}
-                    
-                    </tr>
-                )}
-         
-      </tbody>
-    </Table>
-    
+        <Table striped bordered hover style={{ backgroundColor: 'aliceblue' }}>
+          <thead>
+            <tr>
+              <th>Customer id</th>
+              <th>Amount</th>
+              <th>Duration</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+
+
+            {customers.map(customer =>
+              <tr key={customer._id}>
+                <td >{customer.Customer_Name}</td>
+                <td>{customer.Amount}</td>
+                <td>{customer.Duration}</td>
+                <td onClick={() => { Getbyid(customer._id) }}>
+                  <button className="btn btn-primary" type="submit">Visit Profile </button>
+                </td>
+
+              </tr>
+            )}
+
+          </tbody>
+        </Table>
+      </div>
     </div>
   );
 }
-}
+
 export default Userlist;

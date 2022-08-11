@@ -1,0 +1,28 @@
+
+
+form {
+    justify-content: center;
+    border: 1px solid;
+    /* width: 328px; */
+    width: 50%;
+    margin: auto;
+    height: 400px !important;
+    margin-top: 200px !important;
+    margin-bottom: 200px !important;
+}
+
+.row>* {
+
+    width: 50% !important;
+}
+div#section {
+    background-color:#0096FF;
+}
+.forms{
+    background-color:white;
+
+}
+.MuiGrid-item {
+
+    padding: 18px !important;
+}

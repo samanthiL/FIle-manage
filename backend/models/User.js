@@ -3,12 +3,13 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    Customer_Name : String,
+    Customer_Name: String,
     Amount: String,
-    Duration:String,
+    Duration: { type: Number },
     imgCollection: {
         type: Array
-    }
+    },
+    Repayment: { type: Number },
 
 }, {
     collection: 'users'

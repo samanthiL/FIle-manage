@@ -1,70 +1,63 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-class Userprofile extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            customers: []
-            
+import { useLocation } from 'react-router-dom';
+
+const Userprofile = props => {
+  const [customers, setCustomers] = useState([]);
+  const location = useLocation();
+
+  useEffect(() => {
+    const userId = location.state.id;
+    axios.get(`http://localhost:8022/api/list/${userId}`)
+      .then(
+        (custom) => {
+          setCustomers([custom.data]);
+          console.log('[custom.data]', [custom.data]);
+        },
+
+        (error) => {
+          alert(error);
         }
-    }
-  
-  
- 
-    componentDidMount() {
-      
-    const dd = "62f0fb9d857bbc4e8ee237ca"
-        fetch("http://localhost:8022/api/list?"+dd)
-        .then(res => res.json())
-        .then(
-            (customers) => {
+      )
+  }, [location]);
 
-                console.log("dsd",customers);
-                this.setState({ customers: customers });
-            },
-            (error) => {
-                alert(error);
-            }
-        )
-    }
- 
-    render() {
+  const customerRecord = customers && customers.length > 0 ? customers.map((customer) => {
+    return customer?.id ? (
+      <tr key={customer.id}>
+        <td>{customer.customerName}</td>
+        <td>{customer?.amount}</td>
+        <td>{customer?.duration}</td>
+        <td>{customer?.Repayment}</td>
+      </tr>
+    ) : null
+  }) : null;
 
-return (
-    <div className="App">
-      <h1 align="center">React-App</h1>
-      <h4 align='center'>Crash Course on Material Table </h4>
-      <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>Customer_Name</th>
-          <th>Amount</th>
-          <th>Duration</th>
-          <th>payment</th>
-        </tr>
-      </thead>
-      <tbody>
-    
-    
-                {this.state.customers.map(customer =>
-                    <tr>
-                        <td>{customer.Customer_Name}</td>
-                        <td>{customer.Amount}</td>
-                        <td>{customer.Duration}</td>
+  return (
 
-                        {/* <td>{cus</td> */}
-                        <td>{customer.payment}</td>
-                      
+    <div id="section" className="row">
 
-                    </tr>
-                )}
-         
-      </tbody>
-    </Table>
-    
+      <h1 align="center">Customer Profile</h1>
+      <div className="table" style={{ padding: '142px' }}>
+
+        <Table striped bordered hover style={{ backgroundColor: 'aliceblue' }}>
+          <thead>
+            <tr>
+              <th>Customer_Name</th>
+              <th>Amount</th>
+              <th>Duration</th>
+              <th>Number of installments</th>
+            </tr>
+          </thead>
+          <tbody>
+            {customerRecord}
+          </tbody>
+        </Table>
+      </div>
     </div>
+
+
   );
 }
-}
+
 export default Userprofile;
